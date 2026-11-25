@@ -153,6 +153,10 @@
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "X-Verbose",
+            "value": "true"
           }
         ],
         "url": {
@@ -186,7 +190,10 @@
               "});",
               "if (pm.response.code === 201) {",
               "    pm.collectionVariables.set(\"reservationId\", pm.response.json().id);",
-              "}"
+              "}",
+              "pm.test(\"Verbose reservation details returned\", function () {",
+              "    pm.expect(pm.response.headers.get(\"X-Reservation-Details\")).to.include(\"result=Success\");",
+              "});"
             ]
           }
         }

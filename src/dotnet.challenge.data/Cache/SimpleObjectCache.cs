@@ -7,16 +7,25 @@ public class SimpleObjectCache<TKey, TValue> : ISimpleObjectCache<TKey, TValue>
     where TValue : class
 {
     private readonly ConcurrentDictionary<TKey, TValue> _store = new();
+    private readonly object _writeLock = new();
 
     public Task AddAsync(TKey key, TValue value)
     {
-        _store[key] = value;
+        lock (_writeLock)
+        {
+            _store[key] = value;
+        }
+
         return Task.CompletedTask;
     }
 
     public Task DeleteAsync(TKey key)
     {
-        _store.TryRemove(key, out _);
+        lock (_writeLock)
+        {
+            _store.TryRemove(key, out _);
+        }
+
         return Task.CompletedTask;
     }
 
@@ -34,10 +43,14 @@ public class SimpleObjectCache<TKey, TValue> : ISimpleObjectCache<TKey, TValue>
 
     public Task UpdateAsync(TKey key, TValue value)
     {
-        while (_store.TryGetValue(key, out var current) && !_store.TryUpdate(key, value, current))
+        lock (_writeLock)
         {
-            // Retry if another writer replaced the entry after the lookup.
+            if (_store.ContainsKey(key))
+            {
+                _store[key] = value;
+            }
         }
+
         return Task.CompletedTask;
     }
 }

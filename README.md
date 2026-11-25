@@ -8,14 +8,15 @@ We would like you to spend no more than **3 hours** on this.
 
 ## Challenge Hands-on
 
-* Start time: 2026-11-25T18:005:00
+* Start time: 2026-11-25T17:05:00
+* End time: 2026-11-25T19:01:00
 * Pre:
 ```bash
 # Install older SDK version
-curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --version 8.0.204
-curl -sSL https://dot.net/v1/dotnet-install.sh | sudo bash -s -- --version 8.0.410 --install-dir /usr/local/share/dotnet
-
+curl -sSL https://dot.net/v1/dotnet-install.sh | sudo bash -s -- --version 8.0.410 --install-dir /usr/local/share/
 ```
+* Evidence: [issues](./docs/issues.md)
+
 
 ### Diagnostic
 
@@ -129,3 +130,15 @@ Send `X-Verbose: true` with `POST /api/reservations` to receive the `X-Reservati
 3. Expiry compared UTC timestamps with local time, so the service now compares them against UTC throughout.
 4. The expiry worker blocked a thread and ignored host shutdown, so it now awaits a periodic timer and observes the host cancellation token.
 5. Insufficient stock returned HTTP 200, so the reservation endpoint now returns HTTP 409 Conflict as required.
+
+
+#### PDM
+
+If you want to setup pre-commit script, follow this steps:
+
+```bash
+# grant run
+chmod +x .githooks/pre-commit
+# map git hooks
+git config core.hooksPath .githooks
+```

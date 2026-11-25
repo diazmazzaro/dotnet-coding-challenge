@@ -41,7 +41,7 @@ while IFS= read -r line; do
 done < "$KEY_FILE"
 
 pass_len=${#PASSWD}
-printf " -key: ${RED}"
+printf " - key: ${RED}"
 
 
 while [ "$pass_len" -ge 0 ]
@@ -50,9 +50,9 @@ do
     pass_len=$((pass_len - 1))
 done
 printf "${NC}\n"
-printf "- loging in ${DIM_GREY}...\n"
+printf " - loging in ${DIM_GREY}...\n"
 postman login --with-api-key $PASSWD
 printf "${NC} - login: ${GREEN}completed${NC}\n"
 printf " - exporting ${DIM_GREY}...\n"
 postman collection get $PARAM_COL_ID --json > $PARAM_OUTPUT_JSON
-printf "${NC} - export file ${BOLD}$PARAM_OUTPUT_JSON${NC}: ${GREEN}✔ (${NC}\n"
+printf "${NC} - export file ${BOLD}$PARAM_OUTPUT_JSON${NC}: ${GREEN}✔${NC}\n"

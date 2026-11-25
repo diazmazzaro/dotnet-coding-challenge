@@ -1,10 +1,12 @@
+using System.Collections.Concurrent;
+
 namespace dotnet.challenge.data.Cache;
 
 public class SimpleObjectCache<TKey, TValue> : ISimpleObjectCache<TKey, TValue>
     where TKey : struct
     where TValue : class
 {
-    private readonly Dictionary<TKey, TValue> _store = new();
+    private readonly ConcurrentDictionary<TKey, TValue> _store = new();
 
     public Task AddAsync(TKey key, TValue value)
     {
@@ -14,7 +16,7 @@ public class SimpleObjectCache<TKey, TValue> : ISimpleObjectCache<TKey, TValue>
 
     public Task DeleteAsync(TKey key)
     {
-        _store.Remove(key);
+        _store.TryRemove(key, out _);
         return Task.CompletedTask;
     }
 
@@ -32,9 +34,9 @@ public class SimpleObjectCache<TKey, TValue> : ISimpleObjectCache<TKey, TValue>
 
     public Task UpdateAsync(TKey key, TValue value)
     {
-        if (_store.ContainsKey(key))
+        while (_store.TryGetValue(key, out var current) && !_store.TryUpdate(key, value, current))
         {
-            _store[key] = value;
+            // Retry if another writer replaced the entry after the lookup.
         }
         return Task.CompletedTask;
     }

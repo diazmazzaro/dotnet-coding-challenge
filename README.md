@@ -6,6 +6,17 @@ You will extend a small **inventory reservation** service. The scaffold is inten
 
 We would like you to spend no more than **3 hours** on this.
 
+## Challenge Hands-on
+
+* Start time: 2026-11-25T18:005:00
+* Pre:
+```bash
+# Install older SDK version
+curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --version 8.0.204
+curl -sSL https://dot.net/v1/dotnet-install.sh | sudo bash -s -- --version 8.0.410 --install-dir /usr/local/share/dotnet
+
+```
+
 ## Ground rules
 
 1. Use .NET 8 and C#
@@ -94,3 +105,11 @@ Be deliberate — we will be reading the controller. At minimum:
 - **Restraint.** The scaffold is small on purpose. Don't rewrite it; extend it.
 
 When you're ready to share your work, push to a private repo and add your reviewer as a collaborator.
+
+## Defect fixes
+
+1. Concurrent reservations could pass the same stock check, so the inventory service serializes stock checks and reservation transitions with an asynchronous lock.
+2. The shared cache used a dictionary that could fail during concurrent access, so it now uses a concurrent dictionary with atomic conditional updates.
+3. Expiry compared UTC timestamps with local time, so the service now compares them against UTC throughout.
+4. The expiry worker blocked a thread and ignored host shutdown, so it now awaits a periodic timer and observes the host cancellation token.
+5. Insufficient stock returned HTTP 200, so the reservation endpoint now returns HTTP 409 Conflict as required.

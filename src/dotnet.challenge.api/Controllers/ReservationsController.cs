@@ -31,7 +31,7 @@ public class ReservationsController : ControllerBase
                 return NotFound(new { error = "Product not found." });
 
             case ReserveResult.InsufficientStock:
-                return Ok(new { error = "Insufficient stock." });
+                return Conflict(new { error = "Insufficient stock." });
 
             default:
                 return StatusCode(StatusCodes.Status500InternalServerError);

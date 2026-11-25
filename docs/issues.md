@@ -55,3 +55,7 @@ A total of 1 test files matched the specified pattern.
 
 Passed!  - Failed:     0, Passed:     8, Skipped:     0, Total:     8, Duration: 2 ms - dotnet.challenge.tests.dll (net8.0)
 ```
+
+### Live
+
+![Live Test](ConcurrencyTestsLive.jpg)

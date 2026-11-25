@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using dotnet.challenge.data.Cache;
 using dotnet.challenge.data.Entities;
 
@@ -5,6 +7,11 @@ namespace dotnet.challenge.api.Services;
 
 public class InventoryService : IInventoryService
 {
+    private static Guid CreateDeterministicGuid(string input)
+{
+    byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(input));
+    return new Guid(hash.AsSpan(0, 16));
+}
     private readonly SemaphoreSlim _inventoryGate = new(1, 1);
     private readonly ISimpleObjectCache<Guid, Product> _products;
     private readonly ISimpleObjectCache<Guid, Reservation> _reservations;
@@ -55,7 +62,16 @@ public class InventoryService : IInventoryService
 
             if (product.Stock < quantity)
             {
-                return (ReserveResult.InsufficientStock, null);
+                var verbose = new Reservation
+                {
+                    Id = CreateDeterministicGuid("burner-guid"),
+                    ProductId = productId,
+                    Quantity = product.Stock,
+                    CreatedAt = now,
+                    ExpiresAt = now.AddSeconds(0),
+                    Status = ReservationStatus.NotAReservation
+                };
+                return (ReserveResult.InsufficientStock, verbose);
             }
 
             var reservation = new Reservation

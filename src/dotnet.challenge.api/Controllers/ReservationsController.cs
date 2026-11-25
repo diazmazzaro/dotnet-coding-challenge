@@ -38,11 +38,7 @@ public class ReservationsController : ControllerBase
                 if (bool.TryParse(verbose, out var includeDetails) && includeDetails)
                 {
                     var details = FormattableString.Invariant(
-                        $"result={result}; requestedQuantity={request.Quantity}; ttlSeconds={request.TtlSeconds}");
-                    if (reservation is not null)
-                    {
-                        details += FormattableString.Invariant($"; expiresAt={reservation.ExpiresAt:O}");
-                    }
+                        $"result={result}; requestedQuantity={request.Quantity}; stockQuantity={reservation?.Quantity}");
 
                     Response.Headers["X-Reservation-Details"] = details;
                 }
